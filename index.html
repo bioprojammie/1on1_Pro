@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>皮拉提斯管理系統</title>
+    <title>1對1 教學管理系統</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -29,7 +29,7 @@
 
     <nav class="bg-white shadow-sm z-20 flex-none h-16 flex items-center justify-between px-4">
         <div class="font-bold text-xl text-indigo-600 flex items-center gap-2 select-none">
-            <i class="fa-solid fa-person-running"></i> Pilates Pro
+            <i class="fa-solid fa-chalkboard-user"></i> 1對1 教學系統
         </div>
         <div class="flex space-x-1 bg-gray-100 p-1 rounded-lg">
             <button onclick="switchTab('page-list')" id="nav-list" class="px-4 py-2 rounded-md text-sm font-bold shadow bg-white text-indigo-600 transition">總表</button>
@@ -44,7 +44,7 @@
                 <h2 class="text-lg font-bold border-b pb-2 text-gray-700">建立學生檔案</h2>
                 <input type="text" id="cName" placeholder="學生姓名" class="w-full p-4 border rounded-xl bg-gray-50 text-lg">
                 <input type="number" id="cCredits" placeholder="初始堂數" class="w-full p-4 border rounded-xl bg-gray-50 text-lg">
-                <input type="text" id="cBody" placeholder="身體狀況備註" class="w-full p-4 border rounded-xl">
+                <input type="text" id="cBody" placeholder="狀況備註 (如: 身體狀況/學習目標)" class="w-full p-4 border rounded-xl">
                 
                 <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
                     <label class="font-bold text-blue-600 text-xs block mb-2">預設固定上課時間</label>
@@ -61,7 +61,7 @@
                 <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100"><label class="font-bold text-indigo-600 text-xs block mb-2">1. 上傳合約</label><input type="file" id="cContractFile" accept="image/*" class="w-full text-sm"></div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="bg-gray-50 p-4 rounded-xl border"><div class="flex justify-between mb-1"><label class="font-bold text-gray-400 text-xs">2. 學生簽名</label><button onclick="clearPad('padNewContractStudent')" class="text-xs text-red-400">清除</button></div><div class="canvas-box h-32"><canvas id="padNewContractStudent"></canvas></div></div>
-                    <div class="bg-gray-50 p-4 rounded-xl border"><div class="flex justify-between mb-1"><label class="font-bold text-gray-400 text-xs">3. 老師簽名</label><button onclick="clearPad('padNewContractTeacher')" class="text-xs text-red-400">清除</button></div><div class="canvas-box h-32"><canvas id="padNewContractTeacher"></canvas></div></div>
+                    <div class="bg-gray-50 p-4 rounded-xl border"><div class="flex justify-between mb-1"><label class="font-bold text-gray-400 text-xs">3. 老師/教練簽名</label><button onclick="clearPad('padNewContractTeacher')" class="text-xs text-red-400">清除</button></div><div class="canvas-box h-32"><canvas id="padNewContractTeacher"></canvas></div></div>
                 </div>
                 <button onclick="createStudent()" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg active:scale-95 transition">完成建檔</button>
             </div>
@@ -81,7 +81,7 @@
             <div class="mt-8 p-6 bg-gray-100 rounded-2xl border border-gray-200 text-center">
                 <button onclick="backupData()" class="bg-white border text-gray-700 px-4 py-2 rounded-lg text-sm mr-2"><i class="fa-solid fa-download"></i> 備份</button>
                 <label class="bg-white border text-gray-700 px-4 py-2 rounded-lg text-sm cursor-pointer"><i class="fa-solid fa-upload"></i> 還原<input type="file" id="importFile" accept=".json" class="hidden" onchange="restoreData(this)"></label>
-                <div class="mt-4"><button onclick="clearAllSystem()" class="text-xs text-red-300 underline">清除重置</button><span class="text-[10px] text-gray-300 block mt-1">v9.3</span></div>
+                <div class="mt-4"><button onclick="clearAllSystem()" class="text-xs text-red-300 underline">清除重置</button></div>
             </div>
         </div>
 
@@ -104,7 +104,7 @@
         </div>
     </main>
 
-    <div id="profileModal" class="fixed inset-0 z-50 bg-black bg-opacity-60 hidden flex items-center justify-center p-4"><div class="bg-white w-full max-w-md p-6 rounded-2xl shadow-2xl"><h3 class="font-bold text-xl mb-4 border-b pb-2">編輯學生資料</h3><div class="space-y-4"><div><label class="text-xs text-gray-500 font-bold">姓名</label><input type="text" id="pName" class="w-full p-3 border rounded-xl bg-gray-50"></div><div><label class="text-xs text-gray-500 font-bold">身體狀況</label><input type="text" id="pBody" class="w-full p-3 border rounded-xl bg-gray-50"></div><div class="bg-blue-50 p-3 rounded-xl border border-blue-100"><label class="text-xs font-bold text-blue-600 mb-2 block">固定上課時間</label><div class="flex gap-1 mb-2"><select id="pDay" class="p-2 rounded border bg-white flex-1 text-sm"><option value="週一">週一</option><option value="週二">週二</option><option value="週三">週三</option><option value="週四">週四</option><option value="週五">週五</option><option value="週六">週六</option><option value="週日">週日</option></select><select id="pHour" class="p-2 rounded border bg-white text-sm font-mono"><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option></select><select id="pMin" class="p-2 rounded border bg-white text-sm font-mono"><option value="00">00</option><option value="10">10</option><option value="20">20</option><option value="30">30</option><option value="40">40</option><option value="50">50</option></select><button onclick="addProfileScheduleTag()" class="bg-blue-600 text-white px-3 rounded font-bold text-sm">＋</button></div><div id="profileScheduleTags" class="min-h-[30px] flex flex-wrap gap-1"></div></div></div><div class="flex gap-3 mt-6"><button onclick="document.getElementById('profileModal').classList.add('hidden')" class="flex-1 py-3 bg-gray-100 text-gray-600 rounded-xl font-bold">取消</button><button onclick="saveProfile()" class="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold">儲存變更</button></div></div></div>
+    <div id="profileModal" class="fixed inset-0 z-50 bg-black bg-opacity-60 hidden flex items-center justify-center p-4"><div class="bg-white w-full max-w-md p-6 rounded-2xl shadow-2xl"><h3 class="font-bold text-xl mb-4 border-b pb-2">編輯學生資料</h3><div class="space-y-4"><div><label class="text-xs text-gray-500 font-bold">姓名</label><input type="text" id="pName" class="w-full p-3 border rounded-xl bg-gray-50"></div><div><label class="text-xs text-gray-500 font-bold">狀況備註</label><input type="text" id="pBody" class="w-full p-3 border rounded-xl bg-gray-50"></div><div class="bg-blue-50 p-3 rounded-xl border border-blue-100"><label class="text-xs font-bold text-blue-600 mb-2 block">固定上課時間</label><div class="flex gap-1 mb-2"><select id="pDay" class="p-2 rounded border bg-white flex-1 text-sm"><option value="週一">週一</option><option value="週二">週二</option><option value="週三">週三</option><option value="週四">週四</option><option value="週五">週五</option><option value="週六">週六</option><option value="週日">週日</option></select><select id="pHour" class="p-2 rounded border bg-white text-sm font-mono"><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option></select><select id="pMin" class="p-2 rounded border bg-white text-sm font-mono"><option value="00">00</option><option value="10">10</option><option value="20">20</option><option value="30">30</option><option value="40">40</option><option value="50">50</option></select><button onclick="addProfileScheduleTag()" class="bg-blue-600 text-white px-3 rounded font-bold text-sm">＋</button></div><div id="profileScheduleTags" class="min-h-[30px] flex flex-wrap gap-1"></div></div></div><div class="flex gap-3 mt-6"><button onclick="document.getElementById('profileModal').classList.add('hidden')" class="flex-1 py-3 bg-gray-100 text-gray-600 rounded-xl font-bold">取消</button><button onclick="saveProfile()" class="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold">儲存變更</button></div></div></div>
     <div id="contentModal" class="fixed inset-0 z-40 bg-black bg-opacity-60 hidden flex items-center justify-center p-4"><div class="bg-white w-full max-w-lg p-5 rounded-2xl shadow-2xl h-[80vh] flex flex-col"><div class="flex justify-between items-center mb-4 border-b pb-2"><h3 class="font-bold text-lg">編輯課程內容</h3><button onclick="closeContentModal()" class="text-gray-400"><i class="fa-solid fa-xmark fa-xl"></i></button></div><div class="flex-1 overflow-y-auto space-y-4"><textarea id="modalEditNote" rows="5" placeholder="輸入課程筆記..." class="w-full p-3 rounded-xl bg-gray-50 text-base border focus:ring-2 focus:ring-blue-200"></textarea><div class="font-bold text-gray-500 text-sm">照片紀錄</div><div class="flex gap-2 overflow-x-auto pb-2 min-h-[110px]" id="modalImgList"></div><label class="block w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-center text-gray-400 font-bold cursor-pointer hover:bg-gray-50"><i class="fa-solid fa-images"></i> 點此上傳照片<input type="file" id="modalFileInput" accept="image/*" multiple class="hidden" onchange="handleModalAddImage(this)"></label></div><div class="mt-4 pt-2 border-t"><button onclick="saveModalContent()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold">儲存內容</button></div></div></div>
     <div id="signModal" class="fixed inset-0 z-40 bg-black bg-opacity-60 hidden flex items-center justify-center p-4"><div class="bg-white w-full max-w-md p-5 rounded-2xl shadow-2xl"><div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg">學生簽到</h3><button onclick="clearPad('padSignModal')" class="text-xs text-red-500 font-bold">清除重簽</button></div><div class="canvas-box h-48 bg-gray-50 mb-4"><canvas id="padSignModal"></canvas></div><div class="flex gap-3"><button onclick="closeSignModal()" class="flex-1 py-3 bg-gray-100 text-gray-600 rounded-xl font-bold">取消</button><button onclick="confirmSignModal()" class="flex-1 py-3 bg-green-600 text-white rounded-xl font-bold shadow-lg">確認 (扣1堂)</button></div></div></div>
     <div id="paintModal" class="fixed inset-0 z-50 bg-gray-900 hidden flex flex-col"><div class="flex justify-between items-center p-4 bg-gray-800 text-white safe-top"><button onclick="closePaintModal()" class="px-4 py-2 text-gray-300 font-bold hover:text-white">取消</button><h3 class="font-bold">圖片標註</h3><button onclick="savePaint()" class="px-4 py-2 bg-indigo-500 rounded-lg font-bold shadow hover:bg-indigo-600">完成</button></div><div class="flex-1 relative bg-black flex items-center justify-center overflow-hidden" id="paintContainer"><canvas id="canvasPaint" class="paint-canvas"></canvas></div><div class="p-6 bg-gray-800 flex justify-center gap-6 safe-bottom"><button onclick="setPen('#ef4444')" class="w-12 h-12 rounded-full bg-red-500 border-4 border-gray-700 ring-2 ring-white hover:scale-110 transition"></button><button onclick="setPen('#facc15')" class="w-12 h-12 rounded-full bg-yellow-400 border-4 border-gray-700 hover:scale-110 transition"></button><button onclick="setPen('#3b82f6')" class="w-12 h-12 rounded-full bg-blue-500 border-4 border-gray-700 hover:scale-110 transition"></button><button onclick="setPen('#22c55e')" class="w-12 h-12 rounded-full bg-green-500 border-4 border-gray-700 hover:scale-110 transition"></button></div></div>
@@ -112,36 +112,33 @@
     <div id="contractModal" class="fixed inset-0 z-50 bg-black bg-opacity-90 hidden flex items-center justify-center p-4" onclick="this.classList.add('hidden')"><div class="bg-white p-4 rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()"><div class="flex justify-between items-center mb-4"><h3 class="font-bold">合約與簽名詳情</h3><button onclick="document.getElementById('contractModal').classList.add('hidden')" class="text-gray-500 hover:text-gray-800"><i class="fa-solid fa-xmark fa-lg"></i></button></div><div id="contractContent" class="space-y-4"></div></div></div>
 
     <script>
-        // --- V9.3 自動搬家邏輯 ---
-        const CUR_VER = 'p93';
-        const OLD_VER = 'p92';
+        // --- 核心改動：通用化與自動遷移 ---
+        const CUR_VER = 'tms_v1'; // Generic Key
+        const OLD_VER = 'p93';    // Previous Key
 
         function loadAndUpgradeData() {
             let st = localStorage.getItem(CUR_VER + '_st');
             let rc = localStorage.getItem(CUR_VER + '_rc');
-            
-            // 1. 如果新版本已有資料，直接用
-            if (st && rc) {
-                return { students: JSON.parse(st), records: JSON.parse(rc) };
-            }
+            if (st && rc) return { students: JSON.parse(st), records: JSON.parse(rc) };
 
-            // 2. 如果沒有，嘗試找舊版本 (p92)
+            // Migration from p93
             let oldSt = localStorage.getItem(OLD_VER + '_st');
             let oldRc = localStorage.getItem(OLD_VER + '_rc');
-
-            if (oldSt && oldRc) {
-                console.log(`Auto Migrating data from ${OLD_VER} to ${CUR_VER}`);
-                let sList = JSON.parse(oldSt);
-                let rList = JSON.parse(oldRc);
-
-                // 自動儲存到新位置
-                localStorage.setItem(CUR_VER + '_st', JSON.stringify(sList));
-                localStorage.setItem(CUR_VER + '_rc', JSON.stringify(rList));
-
-                return { students: sList, records: rList };
+            
+            // Fallback: Check p92 if p93 is missing (double safety)
+            if (!oldSt) {
+                oldSt = localStorage.getItem('p92_st');
+                oldRc = localStorage.getItem('p92_rc');
             }
 
-            // 3. 如果都沒有，回傳空
+            if (oldSt && oldRc) {
+                console.log(`Migrating to ${CUR_VER}...`);
+                let sList = JSON.parse(oldSt);
+                let rList = JSON.parse(oldRc);
+                localStorage.setItem(CUR_VER + '_st', JSON.stringify(sList));
+                localStorage.setItem(CUR_VER + '_rc', JSON.stringify(rList));
+                return { students: sList, records: rList };
+            }
             return { students: [], records: [] };
         }
 
@@ -192,7 +189,7 @@
         function removeProfileTag(t) { tempProfileSchedule = tempProfileSchedule.filter(x => x !== t); renderProfileTags(); }
         function saveProfile() { const idx = students.findIndex(x => x.id === curSid); if(idx > -1) { students[idx].name = document.getElementById('pName').value; students[idx].body = document.getElementById('pBody').value; students[idx].schedule = [...tempProfileSchedule]; save(); openDetail(curSid); document.getElementById('profileModal').classList.add('hidden'); } }
 
-        function backupData() { const d = { students, records, version: "9.3", date: new Date().toISOString() }; const b = new Blob([JSON.stringify(d)], { type: "application/json" }); const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = `pilates_backup_${new Date().toISOString().slice(0,10)}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); alert("已下載備份檔"); }
+        function backupData() { const d = { students, records, version: "Generic_v1", date: new Date().toISOString() }; const b = new Blob([JSON.stringify(d)], { type: "application/json" }); const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = `teaching_backup_${new Date().toISOString().slice(0,10)}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); alert("已下載備份檔"); }
         function restoreData(i) { const f = i.files[0]; if (!f) return; const r = new FileReader(); r.onload = (e) => { try { const d = JSON.parse(e.target.result); if (d.students && d.records && confirm("還原將覆蓋目前資料，確定？")) { localStorage.setItem(CUR_VER + '_st', JSON.stringify(d.students)); localStorage.setItem(CUR_VER + '_rc', JSON.stringify(d.records)); alert("還原成功"); location.reload(); } } catch (err) { alert("檔案錯誤"); } }; r.readAsText(f); }
         function clearAllSystem() { if(confirm("清除所有資料無法復原，確定？")) { localStorage.clear(); location.reload(); } }
 
