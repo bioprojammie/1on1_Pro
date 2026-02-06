@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    
     <meta name="apple-mobile-web-app-title" content="1on1 Pro">
-    
     <title>1on1 Pro</title>
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -16,8 +13,6 @@
         canvas { touch-action: none; display: block; width: 100%; height: 100%; cursor: crosshair; background-color: #ffffff; }
         .canvas-box { border: 2px dashed #cbd5e1; border-radius: 12px; overflow: hidden; position: relative; background: white; width: 100%; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        
-        /* UI Components */
         .tag { display: inline-flex; align-items: center; background: #eff6ff; color: #2563eb; padding: 4px 8px; border-radius: 6px; font-size: 0.85rem; margin-right: 4px; margin-bottom: 4px; font-weight: bold; border: 1px solid #dbeafe; }
         .record-card { transition: all 0.2s; border-left: 5px solid transparent; }
         .record-card:active { transform: scale(0.99); }
@@ -121,7 +116,7 @@
                 </div>
                 <div class="text-center pt-8 border-t border-gray-200">
                     <button onclick="clearAllSystem()" class="text-xs text-red-300 hover:text-red-500 underline mb-4">清除所有資料並重置系統</button>
-                    <p class="text-[10px] text-gray-300">1on1 Pro v10.2</p>
+                    <p class="text-[10px] text-gray-300">1on1 Pro v10.3</p>
                 </div>
             </div>
         </div>
@@ -178,9 +173,7 @@
                 console.log("Auto migrating data...");
                 let sList = JSON.parse(oldSt);
                 let rList = JSON.parse(oldRc);
-                // Ensure isArchived exists
                 sList = sList.map(s => ({ ...s, isArchived: s.isArchived || false }));
-                
                 localStorage.setItem(CUR_VER + '_st', JSON.stringify(sList));
                 localStorage.setItem(CUR_VER + '_rc', JSON.stringify(rList));
                 localStorage.setItem(CUR_VER + '_set', JSON.stringify(settings));
@@ -227,7 +220,6 @@
             pads[id] = {c: canvas, ctx: ctx};
         }
 
-        // --- Navigation ---
         function switchTab(id) {
             ['page-create', 'page-list', 'page-detail', 'page-settings'].forEach(p => document.getElementById(p).classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
@@ -278,14 +270,24 @@
                 save(); !students[idx].isArchived ? openDetail(curSid) : switchTab('page-list'); document.getElementById('profileModal').classList.add('hidden');
             } 
         }
-        function toggleArchiveFromList(sid) { const idx = students.findIndex(x => x.id === sid); if(idx > -1) { students[idx].isArchived = !students[idx].isArchived; save(); renderList(); } }
+        
+        // 修正：封存列表的 Toggle 觸發函式 (使用 checkbox 的 onchange)
+        function toggleArchiveFromList(sid) { 
+            const idx = students.findIndex(x => x.id === sid); 
+            if(idx > -1) { 
+                students[idx].isArchived = !students[idx].isArchived; 
+                save(); 
+                renderList(); 
+            } 
+        }
+        
         function deleteStudent() { if(confirm("⚠️ 警告：此操作將永久刪除該學生及其所有課程紀錄，無法復原！\n\n確定刪除？")) { const idx = students.findIndex(x => x.id === curSid); if(idx > -1) { students.splice(idx, 1); records = records.filter(r => r.sid !== curSid); save(); document.getElementById('profileModal').classList.add('hidden'); switchTab('page-list'); } } }
         function addProfileScheduleTag() { const day=document.getElementById('pDay').value, hour=document.getElementById('pHour').value, min=document.getElementById('pMin').value, tag=`${day} ${hour}:${min}`; if(!tempProfileSchedule.includes(tag)){tempProfileSchedule.push(tag); renderProfileTags();} }
         function renderProfileTags() { document.getElementById('profileScheduleTags').innerHTML = tempProfileSchedule.map(t => `<span class="tag cursor-pointer hover:bg-red-100 hover:text-red-500" onclick="removeProfileTag('${t}')">${t} <i class="fa-solid fa-xmark ml-1"></i></span>`).join(''); }
         function removeProfileTag(t) { tempProfileSchedule = tempProfileSchedule.filter(x => x !== t); renderProfileTags(); }
 
         function backupData() { 
-            const d = { students, records, settings: appSettings, version: "10.2", date: new Date().toISOString() }; 
+            const d = { students, records, settings: appSettings, version: "10.3", date: new Date().toISOString() }; 
             const b = new Blob([JSON.stringify(d)], { type: "application/json" }); const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = `1on1pro_backup_${new Date().toISOString().slice(0,10)}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); 
             appSettings.lastBackup = new Date().toISOString(); save(); renderSettingsPage(); checkBackupStatus(); alert("已下載備份檔"); 
         }
@@ -355,10 +357,12 @@
 
             students.forEach(s => {
                 const tr = document.createElement('tr'); 
+                const toggleId = `toggle-list-${s.id}`; // Unique ID for List Toggle
+
                 if (s.isArchived) {
                     hasArchived = true;
                     tr.className = "border-b bg-gray-50";
-                    tr.innerHTML = `<td class="p-4 text-gray-500">${s.name}</td><td class="p-4 text-gray-400 text-sm">已封存</td><td class="p-4 text-gray-400">${s.credits}</td><td class="p-4 text-right"><div class="relative inline-block w-12 h-7 mr-2 align-middle select-none"><input type="checkbox" onclick="toggleArchiveFromList(${s.id})" class="toggle-checkbox absolute block w-0 h-0 opacity-0"/><label class="toggle-label block overflow-hidden h-7 rounded-full bg-gray-300 cursor-pointer"></label></div></td>`;
+                    tr.innerHTML = `<td class="p-4 text-gray-500">${s.name}</td><td class="p-4 text-gray-400 text-sm">已封存</td><td class="p-4 text-gray-400">${s.credits}</td><td class="p-4 text-right"><div class="relative inline-block w-12 h-7 mr-2 align-middle select-none"><input type="checkbox" id="${toggleId}" onclick="toggleArchiveFromList(${s.id})" class="toggle-checkbox absolute block w-0 h-0 opacity-0"/><label for="${toggleId}" class="toggle-label block overflow-hidden h-7 rounded-full bg-gray-300 cursor-pointer"></label></div></td>`;
                     archiveTbody.appendChild(tr);
                 } else {
                     tr.className = "border-b hover:bg-gray-50 active:bg-gray-100 transition cursor-pointer hover-effect"; tr.onclick = (e) => { if(e.target.closest('button')) return; openDetail(s.id); };
